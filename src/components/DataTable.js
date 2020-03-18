@@ -1,7 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import { lighten, makeStyles } from "@material-ui/core/styles";
+import {
+  lighten,
+  makeStyles,
+  createMuiTheme,
+  MuiThemeProvider
+} from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -10,7 +15,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
-import Toolbar from "@material-ui/core/Toolbar";
+
+import { formatNumber, formatPercent } from "../utils";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -42,44 +48,75 @@ const headCells = [
   {
     id: "state",
     numeric: false,
-    label: "State"
+    label: "State",
+    alwayShow: true
   },
-  { id: "tests", numeric: true, disablePadding: false, label: "Total Tests" },
+  { id: "tests", numeric: true, label: "Total Tests" },
   {
-    id: "deltaTests",
+    id: "delta1Tests",
     numeric: true,
-    disablePadding: false,
-    label: "New Tests"
+    label: "New Tests (24h)"
+  },
+  {
+    id: "delta7Tests",
+    numeric: true,
+    label: "New Tests (7d)"
   },
   {
     id: "positive",
     numeric: true,
-    disablePadding: false,
     label: "Total Confirmed"
   },
   {
-    id: "deltaPositive",
+    id: "delta1Positive",
     numeric: true,
-    disablePadding: false,
-    label: "New Confirmed"
+    label: "New Confirmed (24h)"
+  },
+  {
+    id: "delta7Positive",
+    numeric: true,
+    label: "New Confirmed (7d)"
   },
   {
     id: "positiveRate",
     numeric: true,
-    disablePadding: false,
-    label: "Positive Rate"
+    label: "Positive Rate",
+    percent: true
   },
-  { id: "death", numeric: true, disablePadding: false, label: "Deaths" },
   {
-    id: "deltaDeath",
+    id: "positiveRate1",
     numeric: true,
-    disablePadding: false,
-    label: "New Deaths"
+    label: "Positive Rate (24h)",
+    percent: true
+  },
+  {
+    id: "positiveRate7",
+    numeric: true,
+    label: "Positive Rate (7d)",
+    percent: true
+  },
+  { id: "death", numeric: true, label: "Deaths" },
+  {
+    id: "delta1Death",
+    numeric: true,
+    label: "New Deaths (24h)"
+  },
+  {
+    id: "delta7Death",
+    numeric: true,
+    label: "New Deaths (7d)"
   }
 ];
 
-function EnhancedTableHead(props) {
-  const { classes, order, orderBy, rowCount, onRequestSort } = props;
+function EnhancedTableHead({
+  classes,
+  order,
+  orderBy,
+  rowCount,
+  onRequestSort,
+  fields,
+  sortField
+}) {
   const createSortHandler = property => event => {
     onRequestSort(event, property);
   };
@@ -87,27 +124,33 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        {headCells.map(headCell => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
-            padding={headCell.disablePadding ? "none" : "default"}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
+        {headCells.map(headCell =>
+          headCell.alwayShow ||
+          !fields ||
+          fields.indexOf(headCell.id) !== -1 ? (
+            <TableCell
+              key={headCell.id}
+              align={headCell.numeric ? "right" : "left"}
+              padding={headCell.disablePadding ? "none" : "default"}
+              sortDirection={orderBy === headCell.id ? order : false}
             >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </span>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : "asc"}
+                onClick={createSortHandler(headCell.id)}
+              >
+                <span className={classes.bold}>{headCell.label}</span>
+                {orderBy === headCell.id ? (
+                  <span className={classes.visuallyHidden}>
+                    {order === "desc"
+                      ? "sorted descending"
+                      : "sorted ascending"}
+                  </span>
+                ) : null}
+              </TableSortLabel>
+            </TableCell>
+          ) : null
+        )}
       </TableRow>
     </TableHead>
   );
@@ -121,66 +164,53 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired
 };
 
-const useToolbarStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1)
-  },
-  highlight:
-    theme.palette.type === "light"
-      ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
-        },
-  title: {
-    flex: "1 1 100%"
-  }
-}));
-
-const EnhancedTableToolbar = props => {
-  const classes = useToolbarStyles();
-
-  return <Toolbar className={clsx(classes.root)}></Toolbar>;
-};
 const useStylesRow = makeStyles(theme => ({
   totals: {
     backgroundColor: "lightgray"
   }
 }));
 
-const StateRow = ({ row }) => {
+const StateRow = ({ row, fields }) => {
   const classes = useStylesRow();
   return (
     <TableRow className={clsx(!row.state ? classes.totals : null)}>
-      <TableCell component="th" scope="row">
-        {row.state ? row.state : "Totals"}
-      </TableCell>
-      <TableCell align="right">{row.tests}</TableCell>
-      <TableCell align="right">{row.deltaTests}</TableCell>
-      <TableCell align="right">{row.positive}</TableCell>
-      <TableCell align="right">{row.deltaPositive}</TableCell>
-      <TableCell align="right">{row.positiveRate.toFixed(1)}%</TableCell>
-      <TableCell align="right">{row.death}</TableCell>
-      <TableCell align="right">{row.deltaDeath}</TableCell>
+      {headCells.map(headCell =>
+        headCell.alwayShow || !fields || fields.indexOf(headCell.id) !== -1 ? (
+          <TableCell align={headCell.numeric ? "right" : "left"}>
+            {headCell.percent
+              ? formatPercent(row[headCell.id])
+              : headCell.numeric
+              ? formatNumber(row[headCell.id])
+              : row[headCell.id]}
+            {headCell.alwayShow && !row[headCell.id] ? "USA" : null}
+          </TableCell>
+        ) : null
+      )}
     </TableRow>
   );
 };
+const theme = createMuiTheme({
+  overrides: {
+    MuiTableCell: {
+      root: {
+        padding: "5px"
+      }
+    }
+  }
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
     width: "100%"
   },
+  bold: {
+    fontWeight: 600
+  },
   paper: {
     width: "100%",
     marginBottom: theme.spacing(2)
   },
-  table: {
-    minWidth: 750
-  },
+  table: {},
   totals: {
     backgroundColor: "lightgray"
   },
@@ -197,16 +227,25 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function EnhancedTable({ rows, totals }) {
+export default function EnhancedTable({
+  rows,
+  totals,
+  rowsPerPage = 50,
+  fields = null,
+  sortField = "state"
+}) {
   const classes = useStyles();
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("calories");
+  const [order, setOrder] = React.useState(
+    sortField === "state" ? "asc" : "desc"
+  );
+  const [orderBy, setOrderBy] = React.useState(sortField);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(50);
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
+    if (orderBy === property) {
+      const isAsc = orderBy === property && order === "asc";
+      setOrder(isAsc ? "desc" : "asc");
+    }
     setOrderBy(property);
   };
 
@@ -214,49 +253,43 @@ export default function EnhancedTable({ rows, totals }) {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   return (
-    <div className={classes.root}>
-      <EnhancedTableToolbar />
-      <TableContainer>
-        <Table
-          className={classes.table}
-          aria-labelledby="tableTitle"
-          size="small"
-          aria-label="enhanced table"
-        >
-          <EnhancedTableHead
-            classes={classes}
-            order={order}
-            orderBy={orderBy}
-            onRequestSort={handleRequestSort}
-            rowCount={rows.length}
-          />
-          <TableBody>
-            {totals ? <StateRow row={totals} /> : null}
-            {stableSort(rows, getComparator(order, orderBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => {
-                const labelId = `enhanced-table-checkbox-${index}`;
-
-                return <StateRow row={row} />;
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </div>
+    <MuiThemeProvider theme={theme}>
+      <div className={classes.root}>
+        <TableContainer>
+          <Table
+            className={classes.table}
+            aria-labelledby="tableTitle"
+            aria-label="enhanced table"
+          >
+            <EnhancedTableHead
+              classes={classes}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+              rowCount={rows.length}
+              fields={fields}
+              sortField={sortField}
+            />
+            <TableBody>
+              {totals ? <StateRow row={totals} fields={fields} /> : null}
+              {stableSort(rows, getComparator(order, orderBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
+                  return <StateRow key={index} row={row} fields={fields} />;
+                })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          component="div"
+          count={rows.length}
+          rowsPerPageOptions={[rowsPerPage]}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+        />
+      </div>
+    </MuiThemeProvider>
   );
 }

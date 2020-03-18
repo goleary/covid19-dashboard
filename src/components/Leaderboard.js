@@ -1,33 +1,30 @@
-import React, { useEffect, useState } from "react";
-
-import { Paper, makeStyles, Typography } from "@material-ui/core";
+import React from "react";
+import { Paper, Typography, makeStyles } from "@material-ui/core";
 
 import DataTable from "./DataTable";
-import { getStateData, getCountryData } from "../services/covidtracking";
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    width: "100%",
-    paddingTop: theme.spacing(2),
-    marginBottom: theme.spacing(2)
+    padding: theme.spacing(2),
+    textAlign: "left",
+    color: theme.palette.text.secondary
   }
 }));
 
-export const Leaderboard = () => {
-  const [result, setResult] = useState(null);
-  const [totals, setTotals] = useState(null);
+export const Leaderboard = ({ title, description, rows, fields, ...rest }) => {
   const classes = useStyles();
-  useEffect(() => {
-    getStateData().then(data => setResult(data));
-    getCountryData().then(data => setTotals(data));
-  }, []);
-
   return (
-    <div>
-      <Paper className={classes.paper}>
-        <Typography variant="h3">US COVID19 Dashboard</Typography>
-        {result ? <DataTable rows={result} totals={totals} /> : null}
-      </Paper>
-    </div>
+    <Paper className={classes.paper}>
+      <Typography variant="h4">{title}</Typography>
+      {rows ? (
+        <DataTable
+          rows={rows}
+          fields={fields}
+          rowsPerPage={10}
+          {...rest}
+          sortField={fields ? fields[0] : "state"}
+        />
+      ) : null}
+    </Paper>
   );
 };

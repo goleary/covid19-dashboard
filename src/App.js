@@ -2,7 +2,7 @@ import React from "react";
 import { Container, makeStyles } from "@material-ui/core";
 import "./App.css";
 
-import { Leaderboard } from "./components/Leaderboard";
+import { Dashboard } from "./components/Dashboard";
 
 const useStyles = makeStyles(theme => ({
   footer: {
@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <Leaderboard />
+        <Dashboard />
       </Container>
       <footer className={classes.footer}>
         <p>
