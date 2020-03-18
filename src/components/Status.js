@@ -47,7 +47,9 @@ export const Status = ({ currentTotals }) => {
           <Chip
             variant="outlined"
             className={clsx(classes.chip, classes.tests)}
-            label={`${formatNumber(currentTotals.total)} Tests`}
+            label={`${formatNumber(
+              currentTotals.positive + currentTotals.negative
+            )} Tests`}
             size="medium"
           />
         </Grid>
