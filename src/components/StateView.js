@@ -1,14 +1,16 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import { Dialog, DialogContent, DialogTitle } from "@material-ui/core";
 
 import CloseIcon from "@material-ui/icons/Close";
 
+import { getCurrentStateData } from "../services/covidtracking";
 import StateContext from "../context/State";
 import { formatDate, formatNumber } from "../utils";
 import { RawChart } from "./RawChart";
+import { ChipStatus } from "./ChipStatus";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -25,7 +27,12 @@ const useStyles = makeStyles(theme => ({
 export const StateView = ({ state, handleClose }) => {
   const classes = useStyles();
 
+  const [currentTotals, setCurrentTotals] = useState(null);
   const { rawData, rawTotals } = useContext(StateContext);
+
+  useEffect(() => {
+    getCurrentStateData(state).then(data => setCurrentTotals(data));
+  }, []);
 
   if (!rawData && !rawTotals) return;
   let data;
@@ -41,7 +48,7 @@ export const StateView = ({ state, handleClose }) => {
         elem.positive + elem.negative > 0 ? elem.positive + elem.negative : null
     }))
     .reverse();
-
+    
   return (
     <Dialog
       open={true}
@@ -63,6 +70,14 @@ export const StateView = ({ state, handleClose }) => {
         </IconButton>
       </DialogTitle>
       <DialogContent>
+        {currentTotals ? (
+          <React.Fragment>
+            <Typography variant="caption">
+              last update: {currentTotals.lastUpdateEt} (EST)
+            </Typography>
+            <ChipStatus currentTotals={currentTotals} />
+          </React.Fragment>
+        ) : null}
         <RawChart data={data} />
       </DialogContent>
     </Dialog>

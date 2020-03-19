@@ -46,7 +46,7 @@ const LogInfo = () => {
   };
   const handleClose = () => setOpen(false);
   return (
-    <div style={{ display: "flex", "align-items": "center" }}>
+    <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
       <InfoOutlinedIcon onClick={handleOpen} />
       <Dialog
         open={open}
@@ -91,7 +91,7 @@ const LogInfo = () => {
   );
 };
 
-export const RawChart = ({ data, width = 500, height = 400 }) => {
+export const RawChart = ({ data }) => {
   const [useLog, setUseLog] = useState(false);
   const [hide, setHide] = useState({
     tests: false,
@@ -104,7 +104,7 @@ export const RawChart = ({ data, width = 500, height = 400 }) => {
   };
   return (
     <React.Fragment>
-      <ResponsiveContainer width="95%" height={400}>
+      <ResponsiveContainer  height={350}>
         <AreaChart
           data={data}
           margin={{
@@ -146,11 +146,11 @@ export const RawChart = ({ data, width = 500, height = 400 }) => {
           <Legend onClick={handleLegendClick} />
         </AreaChart>
       </ResponsiveContainer>
-      <Typography variant="subtitle">
+      <Typography variant="caption">
         click on legend to toggle series
       </Typography>
       <FormGroup>
-        <div style={{ display: "flex", "flex-direction": "row" }}>
+        <div style={{ display: "flex", flexDirection: "row" }}>
           <FormControlLabel
             control={
               <Switch
@@ -160,7 +160,7 @@ export const RawChart = ({ data, width = 500, height = 400 }) => {
               />
             }
             label="Use Log Scale"
-            style={{ "margin-right": "5px" }}
+            style={{ marginRight: "5px" }}
           />
           <LogInfo />
         </div>

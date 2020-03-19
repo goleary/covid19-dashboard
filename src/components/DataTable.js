@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import {
-  lighten,
   makeStyles,
   createMuiTheme,
   MuiThemeProvider
@@ -179,7 +178,7 @@ const useStylesRow = makeStyles(theme => ({
   }
 }));
 
-const StateRow = ({ row, fields }) => {
+const StateRow = ({ row, fields, index }) => {
   const classes = useStylesRow();
   const [dialogOpen, setDialogOpen] = useState(false);
   const handleClick = () => setDialogOpen(true);
@@ -192,6 +191,7 @@ const StateRow = ({ row, fields }) => {
       hover
       className={clsx(classes.root, !row.state ? classes.totals : null)}
       onClick={handleClick}
+      key={index}
     >
       {headCells.map(headCell =>
         headCell.alwayShow || !fields || fields.indexOf(headCell.id) !== -1 ? (
@@ -298,12 +298,19 @@ export default function EnhancedTable({
             />
             <TableBody>
               {totals ? (
-                <StateRow key={-1} row={totals} fields={fields} />
+                <StateRow key={-1} index={-1} row={totals} fields={fields} />
               ) : null}
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  return <StateRow key={index} row={row} fields={fields} />;
+                  return (
+                    <StateRow
+                      key={index}
+                      index={index}
+                      row={row}
+                      fields={fields}
+                    />
+                  );
                 })}
             </TableBody>
           </Table>

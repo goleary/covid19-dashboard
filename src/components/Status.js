@@ -5,6 +5,7 @@ import StateContext from "../context/State";
 
 import { formatNumber, formatDate } from "../utils";
 import { RawChart } from "./RawChart";
+import { ChipStatus } from "./ChipStatus";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(2),
@@ -59,34 +60,7 @@ export const Status = ({ currentTotals }) => {
     <Paper className={classes.root}>
       <Typography variant="h6">Nationwide Status</Typography>
       <Typography variant="caption">{now.toString()}</Typography>
-      <Grid container className={classes.container}>
-        <Grid item xs={12} sm={4} className={classes.chipItem}>
-          <Chip
-            variant="outlined"
-            className={clsx(classes.chip, classes.tests)}
-            label={`${formatNumber(
-              currentTotals.positive + currentTotals.negative
-            )} Tests`}
-            size="medium"
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} className={classes.chipItem}>
-          <Chip
-            variant="outlined"
-            className={clsx(classes.chip, classes.confirmed)}
-            label={`${formatNumber(currentTotals.positive)} Confirmed`}
-            size="medium"
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} className={classes.chipItem}>
-          <Chip
-            variant="outlined"
-            className={clsx(classes.chip, classes.deaths)}
-            label={`${formatNumber(currentTotals.death)} Deaths`}
-            size="medium"
-          />
-        </Grid>
-      </Grid>
+      <ChipStatus currentTotals={currentTotals} />
       <RawChart data={data} />
     </Paper>
   );

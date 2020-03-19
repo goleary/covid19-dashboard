@@ -62,3 +62,13 @@ export const getCurrentCountryData = async () => {
   const data = await request.json();
   return data[0];
 };
+
+export const getCurrentStateData = async state => {
+  const request = await fetch(
+    state
+      ? "https://covidtracking.com/api/states?state=" + state
+      : "https://covidtracking.com/api/us"
+  );
+  const data = await request.json();
+  return data;
+};
