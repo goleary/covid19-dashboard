@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 import { makeStyles } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import { FormGroup, FormControlLabel, Switch } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -15,7 +15,8 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  Area
+  Area,
+  Legend
 } from "recharts";
 
 import StateContext from "../context/State";
@@ -32,6 +33,9 @@ const useStyles = makeStyles(theme => ({
 
 export const StateView = ({ state, open, handleClose }) => {
   const classes = useStyles();
+
+  const [useLog, setUseLog] = useState(false);
+  const [showTests, setShowTests] = useState(true);
 
   const { rawData, rawTotals } = useContext(StateContext);
 
@@ -79,16 +83,18 @@ export const StateView = ({ state, open, handleClose }) => {
             bottom: 0
           }}
         >
-          <YAxis scale="log" domain={["1", "dataMax"]} />
+          <YAxis scale={useLog ? "log" : "linear"} domain={["1", "dataMax"]} />
           <XAxis dataKey="date" />
           <Tooltip formatter={formatNumber} />
           <CartesianGrid stroke="#f5f5f5" />
-          <Area
-            type="monotone"
-            dataKey="tests"
-            stroke="#82ca9d"
-            fill="#82ca9d"
-          />
+          {showTests ? (
+            <Area
+              type="monotone"
+              dataKey="tests"
+              stroke="#82ca9d"
+              fill="#82ca9d"
+            />
+          ) : null}
           <Area
             type="monotone"
             dataKey="confirmed"
@@ -101,7 +107,30 @@ export const StateView = ({ state, open, handleClose }) => {
             stroke="#e57373"
             fill="#e57373"
           />
+          <Legend />
         </AreaChart>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={useLog}
+                onChange={() => setUseLog(!useLog)}
+                color="primary"
+              />
+            }
+            label="Use Log Scale"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={showTests}
+                onChange={() => setShowTests(!showTests)}
+                color="primary"
+              />
+            }
+            label="Show Tests"
+          />
+        </FormGroup>
       </DialogContent>
     </Dialog>
   );
