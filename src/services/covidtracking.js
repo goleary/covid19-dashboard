@@ -1,9 +1,10 @@
 import groupBy from "lodash/groupBy";
 import map from "lodash/map";
 
-export const getStateData = async () => {
+export const getStateData = async setRawData => {
   const data = await fetch("https://covidtracking.com/api/states/daily");
   const grouped = groupBy(await data.json(), datapoint => datapoint.state);
+  setRawData(grouped);
   return map(grouped, processState);
 };
 const processState = state => {
@@ -49,9 +50,10 @@ const processState = state => {
   };
 };
 
-export const getCountryData = async () => {
+export const getCountryData = async setRawTotals => {
   const request = await fetch("https://covidtracking.com/api/us/daily");
   const data = await request.json();
+  setRawTotals(data);
   return processState(data);
 };
 

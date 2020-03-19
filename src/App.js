@@ -18,6 +18,10 @@ function App() {
       </Container>
       <footer className={classes.footer}>
         <p>
+          <a href="https://twitter.com/g0leary">tweet at me</a> with issues or
+          suggestions.
+        </p>
+        <p>
           built by <a href="https://gabeoleary.com">Gabe O'Leary</a>
         </p>
         <p>

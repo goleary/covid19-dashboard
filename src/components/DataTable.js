@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import {
@@ -17,6 +17,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 
 import { formatNumber, formatPercent } from "../utils";
+import { StateView } from "./StateView";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -172,8 +173,14 @@ const useStylesRow = makeStyles(theme => ({
 
 const StateRow = ({ row, fields }) => {
   const classes = useStylesRow();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const handleClick = () => setDialogOpen(true);
   return (
-    <TableRow className={clsx(!row.state ? classes.totals : null)}>
+    <TableRow
+      hover
+      className={clsx(!row.state ? classes.totals : null)}
+      onClick={handleClick}
+    >
       {headCells.map(headCell =>
         headCell.alwayShow || !fields || fields.indexOf(headCell.id) !== -1 ? (
           <TableCell align={headCell.numeric ? "right" : "left"}>
@@ -186,6 +193,7 @@ const StateRow = ({ row, fields }) => {
           </TableCell>
         ) : null
       )}
+      {dialogOpen ? <StateView state={row.state} /> : null}
     </TableRow>
   );
 };
