@@ -1,0 +1,170 @@
+import React, { useState } from "react";
+
+import CloseIcon from "@material-ui/icons/Close";
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+  makeStyles,
+  Switch,
+  Typography
+} from "@material-ui/core";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
+import { formatDate, formatNumber } from "../utils";
+
+const useStyles = makeStyles(theme => ({
+  closeButton: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500]
+  }
+}));
+const LogInfo = () => {
+  const [open, setOpen] = useState(false);
+  const classes = useStyles();
+  const handleOpen = event => {
+    event.stopPropagation();
+    setOpen(true);
+  };
+  const handleClose = () => setOpen(false);
+  return (
+    <div style={{ display: "flex", "align-items": "center" }}>
+      <InfoOutlinedIcon onClick={handleOpen} />
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Why use log scale?
+          <IconButton
+            aria-label="close"
+            className={classes.closeButton}
+            onClick={handleClose}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            A logarithmic scale enables the chart to display different series
+            with both small and large magnitude (# of deaths vs # of tests) in a
+            way that doesn't obscure the growth in either of the series.
+            <p>
+              Learn more{" "}
+              <a
+                href="https://blog.datawrapper.de/weeklychart-logscale/"
+                target="_new"
+              >
+                here
+              </a>
+              .
+            </p>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary" autoFocus>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};
+
+export const RawChart = ({ data, width = 500, height = 400 }) => {
+  const [useLog, setUseLog] = useState(false);
+  const [hide, setHide] = useState({
+    tests: false,
+    confirmed: false,
+    deaths: false
+  });
+
+  const handleLegendClick = event => {
+    setHide({ ...hide, [event.dataKey]: !hide[event.dataKey] });
+  };
+  return (
+    <React.Fragment>
+      <ResponsiveContainer width="95%" height={400}>
+        <AreaChart
+          data={data}
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0
+          }}
+        >
+          <YAxis
+            tickFormatter={formatNumber}
+            scale={useLog ? "log" : "linear"}
+            domain={["1", "dataMax"]}
+          />
+          <XAxis dataKey="date" />
+          <Tooltip formatter={formatNumber} />
+          <CartesianGrid stroke="#f5f5f5" />
+          <Area
+            type="monotone"
+            dataKey="tests"
+            stroke="#82ca9d"
+            fill="#82ca9d"
+            hide={hide.tests}
+          />
+          <Area
+            type="monotone"
+            dataKey="confirmed"
+            stroke="#ffc658"
+            fill="#ffc658"
+            hide={hide.confirmed}
+          />
+          <Area
+            type="monotone"
+            dataKey="deaths"
+            stroke="#e57373"
+            fill="#e57373"
+            hide={hide.deaths}
+          />
+          <Legend onClick={handleLegendClick} />
+        </AreaChart>
+      </ResponsiveContainer>
+      <Typography variant="subtitle">
+        click on legend to toggle series
+      </Typography>
+      <FormGroup>
+        <div style={{ display: "flex", "flex-direction": "row" }}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={useLog}
+                onChange={() => setUseLog(!useLog)}
+                color="primary"
+              />
+            }
+            label="Use Log Scale"
+            style={{ "margin-right": "5px" }}
+          />
+          <LogInfo />
+        </div>
+      </FormGroup>
+    </React.Fragment>
+  );
+};
