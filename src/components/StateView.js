@@ -3,12 +3,17 @@ import React, { useContext, useState } from "react";
 import { makeStyles } from "@material-ui/core";
 import { FormGroup, FormControlLabel, Switch } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
+} from "@material-ui/core";
 
 import CloseIcon from "@material-ui/icons/Close";
-
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import {
   AreaChart,
   XAxis,
@@ -110,16 +115,20 @@ export const StateView = ({ state, open, handleClose }) => {
           <Legend />
         </AreaChart>
         <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={useLog}
-                onChange={() => setUseLog(!useLog)}
-                color="primary"
-              />
-            }
-            label="Use Log Scale"
-          />
+          <div style={{ display: "flex", "flex-direction": "row" }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={useLog}
+                  onChange={() => setUseLog(!useLog)}
+                  color="primary"
+                />
+              }
+              label="Use Log Scale"
+              style={{ "margin-right": "5px" }}
+            />
+            <LogInfo />
+          </div>
           <FormControlLabel
             control={
               <Switch
@@ -133,5 +142,59 @@ export const StateView = ({ state, open, handleClose }) => {
         </FormGroup>
       </DialogContent>
     </Dialog>
+  );
+};
+
+const LogInfo = () => {
+  const [open, setOpen] = useState(false);
+  const classes = useStyles();
+  const handleOpen = event => {
+    event.stopPropagation();
+    setOpen(true);
+  };
+  const handleClose = () => setOpen(false);
+  return (
+    <div style={{ display: "flex", "align-items": "center" }}>
+      <InfoOutlinedIcon onClick={handleOpen} />
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Why use log scale?
+          <IconButton
+            aria-label="close"
+            className={classes.closeButton}
+            onClick={handleClose}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            A logarithmic scale enables the chart to display different series
+            with both small and large magnitude (# of deaths vs # of tests) in a
+            way that doesn't obscure the growth of the either series.
+            <p>
+              Learn more{" "}
+              <a
+                href="https://blog.datawrapper.de/weeklychart-logscale/"
+                target="_new"
+              >
+                here
+              </a>
+              .
+            </p>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary" autoFocus>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 };
