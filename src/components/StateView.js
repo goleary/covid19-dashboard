@@ -176,7 +176,7 @@ const LogInfo = () => {
           <DialogContentText id="alert-dialog-description">
             A logarithmic scale enables the chart to display different series
             with both small and large magnitude (# of deaths vs # of tests) in a
-            way that doesn't obscure the growth of either of the series.
+            way that doesn't obscure the growth in either of the series.
             <p>
               Learn more{" "}
               <a
