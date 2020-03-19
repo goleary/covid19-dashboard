@@ -1,9 +1,13 @@
 import React, { useContext } from "react";
 
 import { makeStyles } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
+
+import CloseIcon from "@material-ui/icons/Close";
 
 import {
   AreaChart,
@@ -18,11 +22,15 @@ import StateContext from "../context/State";
 import { formatDate, formatNumber } from "../utils";
 
 const useStyles = makeStyles(theme => ({
-  test: {}
+  closeButton: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500]
+  }
 }));
 
-export const StateView = ({ state }) => {
-  const [open, setOpen] = React.useState(true);
+export const StateView = ({ state, open, handleClose }) => {
   const classes = useStyles();
 
   const { rawData, rawTotals } = useContext(StateContext);
@@ -42,17 +50,23 @@ export const StateView = ({ state }) => {
     }))
     .reverse();
 
-  const handleClose = () => {
-    setOpen(false);
-  };
   return (
     <Dialog
-      open={open}
+      open={true}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">{state}</DialogTitle>
+      <DialogTitle id="alert-dialog-title">
+        {state ? state : "USA"}
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={handleClose}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
       <DialogContent>
         <AreaChart
           width={500}

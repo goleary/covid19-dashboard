@@ -50,7 +50,8 @@ const headCells = [
     id: "state",
     numeric: false,
     label: "State",
-    alwayShow: true
+    alwayShow: true,
+    link: true
   },
   { id: "tests", numeric: true, label: "Total Tests" },
   {
@@ -168,6 +169,13 @@ EnhancedTableHead.propTypes = {
 const useStylesRow = makeStyles(theme => ({
   totals: {
     backgroundColor: "lightgray"
+  },
+  root: {
+    cursor: "pointer"
+  },
+  link: {
+    color: "blue",
+    textDecoration: "underline"
   }
 }));
 
@@ -175,15 +183,22 @@ const StateRow = ({ row, fields }) => {
   const classes = useStylesRow();
   const [dialogOpen, setDialogOpen] = useState(false);
   const handleClick = () => setDialogOpen(true);
+  const handleClose = event => {
+    setDialogOpen(false);
+    event.stopPropagation();
+  };
   return (
     <TableRow
       hover
-      className={clsx(!row.state ? classes.totals : null)}
+      className={clsx(classes.root, !row.state ? classes.totals : null)}
       onClick={handleClick}
     >
       {headCells.map(headCell =>
         headCell.alwayShow || !fields || fields.indexOf(headCell.id) !== -1 ? (
-          <TableCell align={headCell.numeric ? "right" : "left"}>
+          <TableCell
+            align={headCell.numeric ? "right" : "left"}
+            className={clsx(headCell.link ? classes.link : null)}
+          >
             {headCell.percent
               ? formatPercent(row[headCell.id])
               : headCell.numeric
@@ -193,7 +208,9 @@ const StateRow = ({ row, fields }) => {
           </TableCell>
         ) : null
       )}
-      {dialogOpen ? <StateView state={row.state} /> : null}
+      {dialogOpen ? (
+        <StateView state={row.state} handleClose={handleClose} />
+      ) : null}
     </TableRow>
   );
 };
@@ -280,7 +297,9 @@ export default function EnhancedTable({
               sortField={sortField}
             />
             <TableBody>
-              {totals ? <StateRow row={totals} fields={fields} /> : null}
+              {totals ? (
+                <StateRow key={-1} row={totals} fields={fields} />
+              ) : null}
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
