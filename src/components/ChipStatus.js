@@ -1,8 +1,8 @@
 import React from "react";
-import { , Chip, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Chip, Grid, makeStyles, Typography } from "@material-ui/core";
 import clsx from "clsx";
 
-import { formatNumber,  } from "../utils";
+import { formatNumber } from "../utils";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(2),
