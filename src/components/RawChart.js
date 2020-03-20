@@ -109,6 +109,32 @@ export const RawChart = ({ data }) => {
   };
   return (
     <div style={{ height: "100%", width: "100%" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between"
+        }}
+      >
+        <Typography variant="h6">Cummulative totals</Typography>
+        <FormGroup>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={useLog}
+                  onChange={() => setUseLog(!useLog)}
+                  color="primary"
+                />
+              }
+              label="Use Log Scale"
+              style={{ marginRight: "5px" }}
+            />
+            <LogInfo />
+          </div>
+        </FormGroup>
+      </div>
+
       <ResponsiveContainer height={350}>
         <AreaChart
           data={data}
@@ -151,6 +177,12 @@ export const RawChart = ({ data }) => {
           <Legend onClick={handleLegendClick} />
         </AreaChart>
       </ResponsiveContainer>
+      <div style={{ textAlign: "center" }}>
+        <Typography variant="caption">
+          click on legend to toggle series
+        </Typography>
+      </div>
+      <Typography variant="h6">Daily Stats</Typography>
       <ResponsiveContainer height={350}>
         <BarChart
           data={data}
@@ -163,11 +195,7 @@ export const RawChart = ({ data }) => {
             bottom: 0
           }}
         >
-          <YAxis
-            tickFormatter={formatNumber}
-            scale={useLog ? "log" : "linear"}
-            domain={["1", "dataMax"]}
-          />
+          <YAxis tickFormatter={formatNumber} />
           <XAxis dataKey="date" />
           <Tooltip formatter={formatNumber} />
           <CartesianGrid stroke="#f5f5f5" />
@@ -195,26 +223,11 @@ export const RawChart = ({ data }) => {
           />
         </BarChart>
       </ResponsiveContainer>
-
-      <Typography variant="caption">
-        click on legend to toggle series
-      </Typography>
-      <FormGroup>
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={useLog}
-                onChange={() => setUseLog(!useLog)}
-                color="primary"
-              />
-            }
-            label="Use Log Scale"
-            style={{ marginRight: "5px" }}
-          />
-          <LogInfo />
-        </div>
-      </FormGroup>
+      <div style={{ textAlign: "center" }}>
+        <Typography variant="caption">
+          click on legend to toggle series
+        </Typography>
+      </div>
     </div>
   );
 };

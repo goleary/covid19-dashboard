@@ -14,7 +14,8 @@ import { ChipStatus } from "./ChipStatus";
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    width: "80%"
+    width: "95%",
+    margin: "5px"
   },
   closeButton: {
     position: "absolute",

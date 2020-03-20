@@ -28,11 +28,13 @@ export const processState = state => {
     state[i].newTests = state[i].tests - state[i + 1].tests;
     state[i].newConfirmed = state[i].confirmed - state[i + 1].confirmed;
     state[i].newDeaths = state[i].deaths - state[i + 1].deaths;
-
+    // not nulling the values below means we can't use log scale on the bar chart
+    // but there is a weird formatting issue if we null the values
+/*
     state[i].newTests = state[i].newTests > 0 ? state[i].newTests : null;
     state[i].newConfirmed =
       state[i].newConfirmed > 0 ? state[i].newConfirmed : null;
     state[i].newDeaths = state[i].newDeaths > 0 ? state[i].newDeaths : null;
-  }
+  */}
   return state;
 };
