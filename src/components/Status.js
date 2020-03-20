@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
-import { Paper, Chip, Grid, makeStyles, Typography } from "@material-ui/core";
-import clsx from "clsx";
+import { Paper, makeStyles, Typography } from "@material-ui/core";
 import StateContext from "../context/State";
 
 import { processState } from "../utils";
@@ -47,7 +46,6 @@ export const Status = ({ currentTotals }) => {
   const data = processState(rawTotals)
     .slice()
     .reverse();
-
   return (
     <Paper className={classes.root}>
       <Typography variant="h6">Nationwide Status</Typography>

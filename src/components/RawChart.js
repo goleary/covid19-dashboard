@@ -21,9 +21,10 @@ import {
   Area,
   AreaChart,
   Bar,
-  BarChart,
+  ComposedChart,
   CartesianGrid,
   Legend,
+  Line,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -93,6 +94,16 @@ const LogInfo = () => {
   );
 };
 
+const lineProps = {
+  strokeWidth: 2,
+  dot: false,
+  activeDot: false,
+  legendType: "none",
+  name: "7 day avg"
+};
+
+const BAR_TRANSPARECY = 80;
+
 export const RawChart = ({ data }) => {
   const [useLog, setUseLog] = useState(false);
   const [hide, setHide] = useState({
@@ -103,7 +114,6 @@ export const RawChart = ({ data }) => {
     deaths: false,
     newDeaths: false
   });
-
   const handleLegendClick = event => {
     setHide({ ...hide, [event.dataKey]: !hide[event.dataKey] });
   };
@@ -184,10 +194,8 @@ export const RawChart = ({ data }) => {
       </div>
       <Typography variant="h6">Daily Stats</Typography>
       <ResponsiveContainer height={300}>
-        <BarChart
+        <ComposedChart
           data={data}
-          height={200}
-          width={400}
           margin={{
             top: 10,
             right: 30,
@@ -203,25 +211,49 @@ export const RawChart = ({ data }) => {
           <Bar
             type="monotone"
             dataKey="newDeaths"
+            stroke={"#e57373" + BAR_TRANSPARECY}
+            fill={"#e57373" + BAR_TRANSPARECY}
+            hide={hide.newDeaths}
+            name="New Deaths"
+          />
+          <Line
+            type="monotone"
+            dataKey="newDeaths_7d_avg"
             stroke="#e57373"
-            fill="#e57373"
+            {...lineProps}
             hide={hide.newDeaths}
           />
           <Bar
             type="monotone"
             dataKey="newConfirmed"
+            stroke={"#ffc658" + BAR_TRANSPARECY}
+            fill={"#ffc658" + BAR_TRANSPARECY}
+            hide={hide.newConfirmed}
+            name="New Confirmed"
+          />
+          <Line
+            type="monotone"
+            dataKey="newConfirmed_7d_avg"
             stroke="#ffc658"
-            fill="#ffc658"
+            {...lineProps}
             hide={hide.newConfirmed}
           />
           <Bar
             type="monotone"
             dataKey="newTests"
-            stroke="#82ca9d"
-            fill="#82ca9d"
+            stroke={"#82ca9d" + BAR_TRANSPARECY}
+            fill={"#82ca9d" + BAR_TRANSPARECY}
+            name="New Tests"
             hide={hide.newTests}
           />
-        </BarChart>
+          <Line
+            type="monotone"
+            dataKey="newTests_7d_avg"
+            stroke="#82ca9d"
+            {...lineProps}
+            hide={hide.newTests}
+          />
+        </ComposedChart>
       </ResponsiveContainer>
       <div style={{ textAlign: "center" }}>
         <Typography variant="caption">
