@@ -8,7 +8,7 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import { getCurrentStateData } from "../services/covidtracking";
 import StateContext from "../context/State";
-import { , processState } from "../utils";
+import { processState } from "../utils";
 import { RawChart } from "./RawChart";
 import { ChipStatus } from "./ChipStatus";
 
