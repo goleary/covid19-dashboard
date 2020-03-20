@@ -135,7 +135,7 @@ export const RawChart = ({ data }) => {
         </FormGroup>
       </div>
 
-      <ResponsiveContainer height={350}>
+      <ResponsiveContainer height={300}>
         <AreaChart
           data={data}
           margin={{
@@ -183,7 +183,7 @@ export const RawChart = ({ data }) => {
         </Typography>
       </div>
       <Typography variant="h6">Daily Stats</Typography>
-      <ResponsiveContainer height={350}>
+      <ResponsiveContainer height={300}>
         <BarChart
           data={data}
           height={200}
