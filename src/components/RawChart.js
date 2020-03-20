@@ -126,7 +126,7 @@ export const RawChart = ({ data }) => {
           justifyContent: "space-between"
         }}
       >
-        <Typography variant="h6">Cummulative totals</Typography>
+        <Typography variant="h6">Cumulative totals</Typography>
         <FormGroup>
           <div style={{ display: "flex", flexDirection: "row" }}>
             <FormControlLabel
