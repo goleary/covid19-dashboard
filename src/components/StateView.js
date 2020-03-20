@@ -34,7 +34,7 @@ export const StateView = ({ state, handleClose }) => {
   useEffect(() => {
     getCurrentStateData(state).then(data => setCurrentTotals(data));
   }, []);
-  if (!rawData && !rawTotals) return;
+  if (!rawData && !rawTotals) return null;
   let data;
   if (state) data = rawData[state];
   else data = rawTotals;

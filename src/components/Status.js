@@ -43,7 +43,7 @@ export const Status = ({ currentTotals }) => {
   const now = new Date();
 
   const { rawTotals } = useContext(StateContext);
-  if (!rawTotals) return;
+  if (!rawTotals) return null;
   const data = processState(rawTotals)
     .slice()
     .reverse();
