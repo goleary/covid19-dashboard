@@ -8,7 +8,7 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import { getCurrentStateData } from "../services/covidtracking";
 import StateContext from "../context/State";
-import { formatDate, formatNumber } from "../utils";
+import { , processState } from "../utils";
 import { RawChart } from "./RawChart";
 import { ChipStatus } from "./ChipStatus";
 
@@ -33,22 +33,15 @@ export const StateView = ({ state, handleClose }) => {
   useEffect(() => {
     getCurrentStateData(state).then(data => setCurrentTotals(data));
   }, []);
-
   if (!rawData && !rawTotals) return;
   let data;
   if (state) data = rawData[state];
   else data = rawTotals;
-  data = data
-    .map(elem => ({
-      date: formatDate(elem.date, false),
-      deaths: elem.death > 0 ? elem.death : null,
-      confirmed: elem.positive > 0 ? elem.positive : null,
-      negative: elem.negative > 0 ? elem.negative : null,
-      tests:
-        elem.positive + elem.negative > 0 ? elem.positive + elem.negative : null
-    }))
+
+  data = processState(data)
+    .slice()
     .reverse();
-    
+
   return (
     <Dialog
       open={true}

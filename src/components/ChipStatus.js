@@ -36,7 +36,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 export const ChipStatus = ({ currentTotals }) => {
-  debugger;
   const classes = useStyles();
   const now = new Date();
 

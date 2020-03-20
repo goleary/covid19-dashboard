@@ -20,6 +20,8 @@ import {
 import {
   Area,
   AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   Legend,
   ResponsiveContainer,
@@ -94,17 +96,20 @@ const LogInfo = () => {
 export const RawChart = ({ data }) => {
   const [useLog, setUseLog] = useState(false);
   const [hide, setHide] = useState({
-    tests: false,
+    tests: true,
+    newTests: true,
     confirmed: false,
-    deaths: false
+    newConfirmed: false,
+    deaths: false,
+    newDeaths: false
   });
 
   const handleLegendClick = event => {
     setHide({ ...hide, [event.dataKey]: !hide[event.dataKey] });
   };
   return (
-    <React.Fragment>
-      <ResponsiveContainer  height={350}>
+    <div style={{ height: "100%", width: "100%" }}>
+      <ResponsiveContainer height={350}>
         <AreaChart
           data={data}
           margin={{
@@ -146,6 +151,51 @@ export const RawChart = ({ data }) => {
           <Legend onClick={handleLegendClick} />
         </AreaChart>
       </ResponsiveContainer>
+      <ResponsiveContainer height={350}>
+        <BarChart
+          data={data}
+          height={200}
+          width={400}
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0
+          }}
+        >
+          <YAxis
+            tickFormatter={formatNumber}
+            scale={useLog ? "log" : "linear"}
+            domain={["1", "dataMax"]}
+          />
+          <XAxis dataKey="date" />
+          <Tooltip formatter={formatNumber} />
+          <CartesianGrid stroke="#f5f5f5" />
+          <Legend onClick={handleLegendClick} />
+          <Bar
+            type="monotone"
+            dataKey="newDeaths"
+            stroke="#e57373"
+            fill="#e57373"
+            hide={hide.newDeaths}
+          />
+          <Bar
+            type="monotone"
+            dataKey="newConfirmed"
+            stroke="#ffc658"
+            fill="#ffc658"
+            hide={hide.newConfirmed}
+          />
+          <Bar
+            type="monotone"
+            dataKey="newTests"
+            stroke="#82ca9d"
+            fill="#82ca9d"
+            hide={hide.newTests}
+          />
+        </BarChart>
+      </ResponsiveContainer>
+
       <Typography variant="caption">
         click on legend to toggle series
       </Typography>
@@ -165,6 +215,6 @@ export const RawChart = ({ data }) => {
           <LogInfo />
         </div>
       </FormGroup>
-    </React.Fragment>
+    </div>
   );
 };

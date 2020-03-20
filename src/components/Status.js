@@ -3,7 +3,7 @@ import { Paper, Chip, Grid, makeStyles, Typography } from "@material-ui/core";
 import clsx from "clsx";
 import StateContext from "../context/State";
 
-import { formatNumber, formatDate } from "../utils";
+import { processState } from "../utils";
 import { RawChart } from "./RawChart";
 import { ChipStatus } from "./ChipStatus";
 const useStyles = makeStyles(theme => ({
@@ -44,16 +44,8 @@ export const Status = ({ currentTotals }) => {
 
   const { rawTotals } = useContext(StateContext);
   if (!rawTotals) return;
-
-  const data = rawTotals
-    .map(elem => ({
-      date: formatDate(elem.date, false),
-      deaths: elem.death > 0 ? elem.death : null,
-      confirmed: elem.positive > 0 ? elem.positive : null,
-      negative: elem.negative > 0 ? elem.negative : null,
-      tests:
-        elem.positive + elem.negative > 0 ? elem.positive + elem.negative : null
-    }))
+  const data = processState(rawTotals)
+    .slice()
     .reverse();
 
   return (
